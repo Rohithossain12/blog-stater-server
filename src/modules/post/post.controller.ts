@@ -57,6 +57,26 @@ const getPostById = async (req: Request, res: Response) => {
 
 
 
+const updatePost = async (req: Request, res: Response) => {
+    try {
+        const result = await PostService.updatePost(Number(req.params.id), req.body)
+        if (!result) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "Post not found",
+            });
+        }
+
+        res.status(httpStatus.OK).json({
+            message: "Post updated successfully",
+            data: result,
+        });
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Failed to update Post",
+            error: error.message || error,
+        });
+    }
+}
 
 
 
@@ -86,5 +106,6 @@ export const PostController = {
     createPost,
     getAllPosts,
     getPostById,
-    deletePost
+    deletePost,
+    updatePost
 }
