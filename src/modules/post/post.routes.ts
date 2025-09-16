@@ -6,6 +6,7 @@ const router = express.Router();
 
 
 router.post('/create-post', PostController.createPost);
+router.get('/all-posts', PostController.getAllPosts)
 
 
 
