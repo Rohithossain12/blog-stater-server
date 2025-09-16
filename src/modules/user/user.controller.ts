@@ -10,8 +10,11 @@ const createUser = async (req: Request, res: Response) => {
             data: result,
         });
 
-    } catch (error) {
-        res.status(httpStatus.BAD_REQUEST).send(error);
+    } catch (error:any) {
+        res.status(httpStatus.BAD_REQUEST).json({
+            message:"Failed to create user",
+            error:error.message ||error
+        });
     }
 
 }
@@ -33,10 +36,27 @@ const getAllUsers = async (req: Request, res: Response) => {
     }
 
 }
+const getUserById = async (req: Request, res: Response) => {
+    try {
+        const result = await UserService.getUserById(Number(req.params.id));
+        res.status(httpStatus.OK).json({
+            message: "User fetched successfully",
+            data: result
+        })
+
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Failed to fetch user",
+            error: error.message || error,
+        });
+    }
+
+}
 
 
 
 export const UserController = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    getUserById
 }

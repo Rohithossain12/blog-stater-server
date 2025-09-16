@@ -24,13 +24,25 @@ const getAllUsers = async () => {
             status: true,
             isVerified: true,
             createdAt: true,
-            updatedAt: true
+            updatedAt: true,
+            posts: true
         },
-        orderBy:{
-            createdAt:"desc"
+        orderBy: {
+            createdAt: "desc"
         }
     })
     return result;
+}
+
+
+const getUserById = async (id: number) => {
+    const result = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    })
+    return result;
+
 }
 
 
@@ -38,5 +50,6 @@ const getAllUsers = async () => {
 
 export const UserService = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    getUserById
 }
