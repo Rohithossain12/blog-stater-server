@@ -31,13 +31,6 @@ const getAllPosts = async () => {
             thumbnail: true,
             views: true,
             tags: true,
-            author: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            },
             authorId: true,
             isFeatured: true,
             createdAt: true,
@@ -51,11 +44,29 @@ const getAllPosts = async () => {
     return result;
 }
 
+const getPostById = async (id: number) => {
+    const result = await prisma.post.findUnique({
+        where: {
+            id
+        }
+    })
+    return result;
 
+}
 
+const deletePost = async (id: number) => {
+    const result = await prisma.post.delete({
+        where: {
+            id
+        }
+    })
+    return result;
+}
 
 
 export const PostService = {
     createPost,
-    getAllPosts
+    getAllPosts,
+    getPostById,
+    deletePost
 }

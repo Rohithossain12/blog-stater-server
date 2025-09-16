@@ -38,8 +38,53 @@ const getAllPosts = async (req: Request, res: Response) => {
 
 
 
+const getPostById = async (req: Request, res: Response) => {
+    try {
+        const result = await PostService.getPostById(Number(req.params.id));
+        res.status(httpStatus.OK).json({
+            message: "Post fetched successfully",
+            data: result
+        })
+
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Failed to fetch post",
+            error: error.message || error,
+        });
+    }
+
+}
+
+
+
+
+
+
+
+const deletePost = async (req: Request, res: Response) => {
+    try {
+        const result = await PostService.deletePost(Number(req.params.id))
+        if (!result) {
+            return res.status(httpStatus.NOT_FOUND).json({
+                message: "Post not found",
+            });
+        }
+        res.status(httpStatus.OK).json({
+            message: "Post deleted successfully"
+        });
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "Failed to delete post",
+            error: error.message || error,
+        });
+    }
+}
+
+
 
 export const PostController = {
     createPost,
-   getAllPosts
+    getAllPosts,
+    getPostById,
+    deletePost
 }
