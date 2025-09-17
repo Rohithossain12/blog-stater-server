@@ -26,14 +26,16 @@ const getAllPosts = async ({
     page = 1,
     limit = 10,
     search,
-    isFeatured
+    isFeatured,
+    tags
 }: {
     page?: number,
     limit?: number,
     search?: string,
-    isFeatured?: boolean
+    isFeatured?: boolean,
+    tags?: string[]
 }) => {
-    console.log({ isFeatured });
+    console.log({ tags });
     const skip = (page - 1) * limit
     const where: any = {
         AND: [
@@ -45,17 +47,41 @@ const getAllPosts = async ({
                 ]
 
             },
-            typeof isFeatured === "boolean" && { isFeatured }
+            typeof isFeatured === "boolean" && { isFeatured },
+            (tags && tags.length > 0) && { tags: { hasEvery: tags } }
         ].filter(Boolean)
     };
 
     const result = await prisma.post.findMany({
         skip,
         take: limit,
-        where
+        where,
+        include: {
+            author: {
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    
+                }
+            }
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
     });
 
-    return result;
+    const total = await prisma.post.count({ where });
+
+    return {
+        data: result,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit)
+        }
+    };
 }
 
 
