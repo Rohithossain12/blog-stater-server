@@ -23,64 +23,43 @@ const createPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
 }
 
 const getAllPosts = async ({
-    page,
-    limit,
-    search
+    page = 1,
+    limit = 10,
+    search,
+    isFeatured
 }: {
-    page: number,
-    limit: number,
-    search: string
+    page?: number,
+    limit?: number,
+    search?: string,
+    isFeatured?: boolean
 }) => {
-    console.log(search);
+    console.log({ isFeatured });
     const skip = (page - 1) * limit
+    const where: any = {
+        AND: [
+            search && {
+                OR: [
+
+                    { title: { contains: search, mode: "insensitive" } },
+                    { content: { contains: search, mode: "insensitive" } }
+                ]
+
+            },
+            typeof isFeatured === "boolean" && { isFeatured }
+        ].filter(Boolean)
+    };
+
     const result = await prisma.post.findMany({
         skip,
         take: limit,
-        where: {
-            OR: [
+        where
+    });
 
-                {
-                    title: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
-
-                },
-                {
-                    content: {
-                        contains: search,
-                        mode: "insensitive"
-                    }
-                }
-
-            ]
-
-        },
-        select: {
-            id: true,
-            title: true,
-            content: true,
-            thumbnail: true,
-            views: true,
-            tags: true,
-            authorId: true,
-            author: {
-                select: {
-                    name: true,
-                    email: true
-                }
-            },
-            isFeatured: true,
-            createdAt: true,
-            updatedAt: true
-
-        },
-        orderBy: {
-            createdAt: "desc"
-        }
-    })
     return result;
 }
+
+
+
 
 const getPostById = async (id: number) => {
     const result = await prisma.post.findUnique({
