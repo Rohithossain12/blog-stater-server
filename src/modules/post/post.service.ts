@@ -62,7 +62,7 @@ const getAllPosts = async ({
                     id: true,
                     email: true,
                     name: true,
-                    
+
                 }
             }
         },
@@ -88,13 +88,21 @@ const getAllPosts = async ({
 
 
 const getPostById = async (id: number) => {
-    const result = await prisma.post.findUnique({
-        where: {
-            id
-        }
-    })
-    return result;
-
+    return await prisma.$transaction(async (tx) => {
+        await tx.post.update({
+            where: { id },
+            data: {
+                views: {
+                    increment: 1
+                }
+            }
+        });
+        return await tx.post.findUnique({
+            where: {
+                id
+            }
+        });
+    });
 }
 
 
