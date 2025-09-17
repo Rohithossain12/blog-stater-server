@@ -32,10 +32,29 @@ const login = async (req: Request, res: Response) => {
 
 
 
+const loginWithGoogle = async (req: Request, res: Response) => {
+    try {
+        const result = await AuthService.loginWithGoogle(req.body);
+
+        res.status(httpStatus.OK).json({
+            success: true,
+            message: "Login successfully",
+            data: result,
+        });
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "Something went wrong during Google login",
+            error: error.message || error,
+
+        })
+    }
+};
 
 
 
 
 export const AuthController = {
-    login
+    login,
+    loginWithGoogle
 }
