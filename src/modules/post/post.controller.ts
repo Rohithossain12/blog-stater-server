@@ -27,7 +27,7 @@ const getAllPosts = async (req: Request, res: Response) => {
         const search = (req.query.search as string) || "";
         const isFeatured = req.query.isFeatured ? req.query.isFeatured === "true" : undefined;
         const tags = req.query.tags ? (req.query.tags as string).split(",") : []
-        const result = await PostService.getAllPosts({ page, limit, search, isFeatured,tags });
+        const result = await PostService.getAllPosts({ page, limit, search, isFeatured, tags });
         res.status(httpStatus.OK).json({
             message: "All Post fetched successfully",
             data: result,
@@ -108,10 +108,27 @@ const deletePost = async (req: Request, res: Response) => {
 
 
 
+const getBlogStat = async (req: Request, res: Response) => {
+    try {
+        const stats = await PostService.getBlogStat();
+        res.status(httpStatus.OK).json({
+            message: "stats fetching successfully",
+            stats
+        })
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "stats fetching error",
+            error
+        })
+    }
+}
+
+
 export const PostController = {
     createPost,
     getAllPosts,
     getPostById,
     deletePost,
-    updatePost
+    updatePost,
+    getBlogStat
 }
