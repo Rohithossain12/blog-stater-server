@@ -18,8 +18,6 @@ const createPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
 
     })
     return createdPost;
-
-
 }
 
 const getAllPosts = async ({
@@ -136,13 +134,43 @@ const getBlogStat = async () => {
             _max: { views: true },
             _min: { views: true }
         });
+
+        const featuredCount = await tx.post.count({
+            where: {
+                isFeatured: true
+            }
+        });
+
+
+        const topFeatured = await tx.post.findFirst({
+            where: { isFeatured: true },
+            orderBy: { views: "desc" }
+        });
+
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+
+        const lastWeekPostCount = await tx.post.count({
+            where: {
+                createdAt: {
+                    gte: lastWeek
+                }
+            }
+        })
+
+
+
         return {
 
             totalPosts: aggregates._count ?? 0,
             totalViews: aggregates._sum.views ?? 0,
             avgViews: aggregates._avg.views ?? 0,
             maxViews: aggregates._max.views ?? 0,
-            minViews: aggregates._min.views ?? 0
+            minViews: aggregates._min.views ?? 0,
+            featuredPosts: featuredCount ?? 0,
+            topFeaturedPosts: topFeatured ?? 0,
+            lastWeekPostCounts: lastWeekPostCount ?? 0
 
         }
     });
